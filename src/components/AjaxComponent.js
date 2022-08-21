@@ -4,6 +4,8 @@ export const AjaxComponent = () => {
 
     const [usuarios, setUsuarios] = useState([]);
     const [cargando, setCargando] = useState(true);
+    const [errores, setErrores] = useState("");
+    const [url, setUrl] = useState(process.env.REACT_APP_remoteHost + "api/users")
 
     // Generico / basico
     const getUsuariosEstaticos = () => {
@@ -32,7 +34,7 @@ export const AjaxComponent = () => {
     }
 
     const getUsuariosAjaxPms = () => {
-        fetch("https://reqres.in/api/users?page=1")
+        fetch(url)
             .then(respuesta => respuesta.json())
             .then(
                 resultado_final => {
@@ -46,12 +48,23 @@ export const AjaxComponent = () => {
     }
 
     const getUsuariosAjaxAW = async () => {
-        const peticion = await fetch("https://reqres.in/api/users?page=1");
-        const datos = await peticion.json();
 
-        setUsuarios(datos.data);
+        setTimeout(async () => {
+            try {
+                const peticion = await fetch(url);
+                const datos = await peticion.json();
 
-        console.log(datos.data)
+                setUsuarios(datos.data);
+                setCargando(false);
+
+                console.log(datos.data)
+
+            } catch (error) {
+                console.log(error.message);
+                setErrores(error.message);
+            }
+
+        }, 2000)
     }
 
     useEffect(() => {
@@ -65,7 +78,6 @@ export const AjaxComponent = () => {
         };
 
     }, [])
-
     if (cargando == true) {
         // Cuando esta todo cargando
         return (
@@ -73,7 +85,15 @@ export const AjaxComponent = () => {
                 Cargando datos...
             </div>
         )
-    } else {
+    }
+    else if (errores != "") {
+        // Cuando esta todo cargando
+        return (
+            <div className='errores'>
+                {errores}
+            </div>
+        )
+    } else if (cargando == false && errores == "") {
         // Cuando todo ha ido bien
         return (
             <div>
@@ -81,11 +101,13 @@ export const AjaxComponent = () => {
                 <ol>
                     {
                         usuarios.map(usuario => {
-                            return <li key={usuario.id}>{usuario.first_name} {usuario.last_name}</li>
+                            return (<li key={usuario.id}>
+                                {/* <img src={usuario.avatar} width="20px" /> */}
+                                {usuario.nombre} {usuario.apellido}</li>)
                         })
                     }
                 </ol>
-            </div>
+            </div >
         )
     }
 }

@@ -1,4 +1,3 @@
-import { calculateNewValue } from '@testing-library/user-event/dist/utils';
 import React from 'react'
 
 export const EventosComponente = () => {
@@ -10,8 +9,6 @@ export const EventosComponente = () => {
     function getInfo(e, nombre) {
         console.log("Hola, soy un evento click " + nombre);
     }
-
-    calculateNewValue
 
     return (
         <div>
